@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+:root {
+  --ayhabo-blue: #0A2342;
+  --ayhabo-orange: #ED7D31;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: #f8fafc;
+  color: #0f172a;
+}
