@@ -17,4 +17,4 @@ export const categories: Array<{
   {name:'Électronique',icon:'🔌',desc:'Sélection en préparation'},
   {name:'Accessoires mobiles',icon:'📱',desc:'Sélection en préparation'},
   {name:'Beauté',icon:'✨',desc:'Sélection en préparation'}
-];;
+ ];
