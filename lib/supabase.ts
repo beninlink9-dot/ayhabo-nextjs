@@ -1,4 +1,5 @@
 const SUPABASE_PROJECT_URL =
+  process.env.NEXT_PUBLIC_SUPABASE_URL ||
   "https://uzgvlbhfevxfacnnadtc.supabase.co";
 
 const FUNCTIONS_BASE_URL =
@@ -6,6 +7,7 @@ const FUNCTIONS_BASE_URL =
 
 export const supabaseConfig = Object.freeze({
   projectUrl: SUPABASE_PROJECT_URL,
+  anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
   gatewayUrl: `${FUNCTIONS_BASE_URL}/nigerex-security-proxy`,
   trackingUrl: `${FUNCTIONS_BASE_URL}/nigerex-order-tracking-v1`,
   marketingPublicUrl: `${FUNCTIONS_BASE_URL}/nigerex-marketing-public-v1`,
