@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { getBlogPostBySlug, getBlogPosts, getRelatedPosts } from "@/lib/blog";
+import {
+  getBlogPostBySlug,
+  getBlogPosts,
+  getRelatedPosts,
+  prepareBlogContent,
+} from "@/lib/blog";
 import { products } from "@/lib/products";
 
 const SITE_URL = "https://www.ayhabo.com";
@@ -22,13 +27,6 @@ function formatDate(value: string): string {
 function normalize(value: string): string {
   return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
 }
-
-function prepareBlogHtml(html: string): string {
-  return html
-    .replace(/href=(["'])\/produit\//g, 'href=$1/produits/')
-    .replace(/href=(["'])https?:\/\/www\\.ayhabo\\.com\/produit\//g, 'href=$1https://www.ayhabo.com/produits/');
-}
-
 
 export async function generateStaticParams() {
   const posts = await getBlogPosts();
@@ -146,7 +144,7 @@ export default async function BlogArticlePage({
         <div className="mt-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200 sm:p-10">
           <div
             className="prose prose-slate max-w-none prose-headings:text-[#0A2342] prose-a:text-[#0A2342] prose-strong:text-[#0A2342]"
-            dangerouslySetInnerHTML={{ __html: prepareBlogHtml(post.content) }}
+            dangerouslySetInnerHTML={{ __html: prepareBlogContent(post.content) }}
           />
         </div>
 
