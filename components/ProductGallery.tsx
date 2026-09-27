@@ -3,7 +3,6 @@
 import { useState } from "react";
 
 import type { Product } from "@/lib/products";
-import { whatsappLink } from "@/lib/whatsapp";
 
 type ProductGalleryProps = {
   product: Product;
@@ -11,9 +10,6 @@ type ProductGalleryProps = {
 
 export default function ProductGallery({ product }: ProductGalleryProps) {
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedVariant, setSelectedVariant] = useState(product.defaultVariant);
-
-  const message = `Bonjour Ay-Habo, je veux commander : ${product.name} (${selectedVariant}) à ${product.price} FCFA`;
 
   return (
     <div>
@@ -51,36 +47,6 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
           ))}
         </div>
       )}
-
-      <div className="mt-7">
-        <p className="text-sm font-semibold text-[#0A2342]">Choisir une variante</p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {product.variants.map((variant) => (
-            <button
-              key={variant}
-              type="button"
-              onClick={() => setSelectedVariant(variant)}
-              aria-pressed={selectedVariant === variant}
-              className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
-                selectedVariant === variant
-                  ? "border-[#0A2342] bg-[#0A2342] text-white"
-                  : "border-slate-300 bg-white text-slate-700 hover:border-[#0A2342]"
-              }`}
-            >
-              {variant}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <a
-        href={whatsappLink(message, "niger")}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-6 flex w-full items-center justify-center rounded-xl bg-emerald-600 px-5 py-4 text-base font-bold uppercase tracking-wide text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
-      >
-        Commander sur WhatsApp
-      </a>
     </div>
   );
 }
