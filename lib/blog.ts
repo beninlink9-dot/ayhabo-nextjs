@@ -64,7 +64,7 @@ async function blogRequest<T>(
   path: string,
   body: Record<string, unknown>,
 ): Promise<T> {
-  const url = `${supabaseConfig.blogUrl${"}"}${"}path${"}`;
+  const url = `${supabaseConfig.blogUrl}${path}`;
 
   try {
     const response = await fetch(url, {
@@ -86,7 +86,7 @@ async function blogRequest<T>(
     console.log("[Ay-Habo Blog] Raw response:", rawBody.slice(0, 500));
 
     if (!response.ok) {
-      throw new Error(`Blog API error: ${"}response.status${"}`);
+      throw new Error(`Blog API error: ${response.status}`);
     }
 
     try {
