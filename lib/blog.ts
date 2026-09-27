@@ -66,9 +66,9 @@ export function prepareBlogContent(raw: string): string {
   if (!raw) return "";
 
   let html = marked.parse(raw, { async: false }) as string;
-  html = html.replace(/\\/produit\\//g, "/produits/");
+  html = html.replace(/\/produit\//g, "/produits/");
   html = html.replace(
-    /https:\\/\\/www\\.ayhabo\\.com\\/produit\\//g,
+    /https:\/\/www\.ayhabo\.com\/produit\//g,
     "https://www.ayhabo.com/produits/",
   );
 
