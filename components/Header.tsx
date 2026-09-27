@@ -90,6 +90,9 @@ export default function Header() {
           <Link href="/catalogue" className="text-sm font-medium text-slate-700 transition hover:text-[#0A2342]">
             Catalogue
           </Link>
+          <Link href="/blog" className="text-sm font-medium text-slate-700 transition hover:text-[#0A2342]">
+            Blog &amp; conseils
+          </Link>
           <Link href="/suivi" className="text-sm font-medium text-slate-700 transition hover:text-[#0A2342]">
             Suivre ma commande
           </Link>
