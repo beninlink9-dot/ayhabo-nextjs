@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 
+import { getBlogPosts } from "@/lib/blog";
 import { products } from "@/lib/products";
 
 const baseUrl = "https://www.ayhabo.com";
@@ -18,8 +19,9 @@ const staticPages = [
   { path: "/suivi", priority: 0.8, changeFrequency: "monthly" as const },
 ];
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date();
+  const posts = await getBlogPosts();
 
   const staticEntries: MetadataRoute.Sitemap = staticPages.map((page) => ({
     url: `${baseUrl}${page.path}`,
@@ -35,5 +37,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  return [...staticEntries, ...productEntries];
+  const blogEntries: MetadataRoute.Sitemap = [
+    {
+      url: `${baseUrl}/blog`,
+      lastModified,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    ...posts.map((post) => ({
+      url: `${baseUrl}/blog/${post.slug}`,
+      lastModified: post.updatedAt || post.publishedAt,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    })),
+  ];
+
+  return [...staticEntries, ...productEntries, ...blogEntries];
 }
