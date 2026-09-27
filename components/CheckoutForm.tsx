@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 
 import { useCart } from "@/lib/cart-context";
-import { whatsappLink } from "@/lib/whatsapp";
+import { whatsappLinkForCity } from "@/lib/whatsapp";
 
 const CITIES = [
   "Niamey",
@@ -15,39 +15,78 @@ const CITIES = [
   "Dosso",
   "Tillabéri",
   "Diffa",
-  "Autre ville",
+  "Cotonou",
+  "Porto-Novo",
+  "Parakou",
+  "Abomey-Calavi",
+  "Bohicon",
+  "Natitingou",
+  "Djougou",
+  "Autre ville (préciser)",
 ] as const;
 
 type City = (typeof CITIES)[number];
-type ReceptionMode = "Livraison à domicile" | "Retrait" | "Retrait agence de transport";
-type PaymentMode = "Espèces à la livraison" | "MyNITA" | "Amana";
+type ReceptionMode =
+  | "Livraison à domicile"
+  | "Retrait"
+  | "Retrait agence de transport";
+type PaymentMode =
+  | "Espèces à la livraison"
+  | "MyNITA"
+  | "Amana"
+  | "Mobile Money Bénin (MTN MoMo, Moov Money)"
+  | "Espèces (à confirmer sur WhatsApp)";
 
-const DEFAULT_RECEPTION: Record<City, ReceptionMode> = {
-  Niamey: "Livraison à domicile",
-  Maradi: "Retrait agence de transport",
-  Zinder: "Retrait agence de transport",
-  Tahoua: "Retrait agence de transport",
-  Agadez: "Retrait agence de transport",
-  Dosso: "Retrait agence de transport",
-  Tillabéri: "Retrait agence de transport",
-  Diffa: "Retrait agence de transport",
-  "Autre ville": "Retrait agence de transport",
-};
+const NIGER_CITIES = new Set([
+  "Niamey",
+  "Maradi",
+  "Zinder",
+  "Tahoua",
+  "Agadez",
+  "Dosso",
+  "Tillabéri",
+  "Diffa",
+]);
 
-const DEFAULT_PAYMENT: Record<City, PaymentMode> = {
-  Niamey: "Espèces à la livraison",
-  Maradi: "MyNITA",
-  Zinder: "MyNITA",
-  Tahoua: "MyNITA",
-  Agadez: "MyNITA",
-  Dosso: "MyNITA",
-  Tillabéri: "MyNITA",
-  Diffa: "MyNITA",
-  "Autre ville": "MyNITA",
-};
+const BENIN_CITIES = new Set([
+  "Cotonou",
+  "Porto-Novo",
+  "Parakou",
+  "Abomey-Calavi",
+  "Bohicon",
+  "Natitingou",
+  "Djougou",
+]);
 
 function formatPrice(value: number) {
   return new Intl.NumberFormat("fr-FR").format(value);
+}
+
+function getCountry(city: City): "niger" | "benin" | "other" {
+  if (NIGER_CITIES.has(city)) return "niger";
+  if (BENIN_CITIES.has(city)) return "benin";
+  return "other";
+}
+
+function getReceptionOptions(city: City): ReceptionMode[] {
+  return city === "Niamey"
+    ? ["Livraison à domicile", "Retrait"]
+    : ["Retrait agence de transport"];
+}
+
+function getPaymentOptions(city: City): PaymentMode[] {
+  if (city === "Niamey") {
+    return ["Espèces à la livraison", "MyNITA", "Amana"];
+  }
+
+  if (BENIN_CITIES.has(city)) {
+    return [
+      "Mobile Money Bénin (MTN MoMo, Moov Money)",
+      "Espèces (à confirmer sur WhatsApp)",
+    ];
+  }
+
+  return ["MyNITA", "Amana"];
 }
 
 export default function CheckoutForm() {
@@ -56,42 +95,40 @@ export default function CheckoutForm() {
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [city, setCity] = useState<City>("Niamey");
+  const [otherCity, setOtherCity] = useState("");
   const [receptionMode, setReceptionMode] = useState<ReceptionMode>(
-    DEFAULT_RECEPTION.Niamey,
+    "Livraison à domicile",
   );
   const [address, setAddress] = useState("");
   const [paymentMode, setPaymentMode] = useState<PaymentMode>(
-    DEFAULT_PAYMENT.Niamey,
+    "Espèces à la livraison",
   );
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
+  const country = getCountry(city);
   const isNiamey = city === "Niamey";
+  const isOtherCity = city === "Autre ville (préciser)";
   const requiresAddress = isNiamey && receptionMode === "Livraison à domicile";
-  const paymentBeforeShipping = !isNiamey;
+  const paymentBeforeShipping = city !== "Niamey";
 
-  const receptionOptions = useMemo<ReceptionMode[]>(
-    () =>
-      isNiamey
-        ? ["Livraison à domicile", "Retrait"]
-        : ["Retrait agence de transport"],
-    [isNiamey],
+  const receptionOptions = useMemo(
+    () => getReceptionOptions(city),
+    [city],
   );
 
-  const paymentOptions = useMemo<PaymentMode[]>(
-    () =>
-      isNiamey
-        ? ["Espèces à la livraison", "MyNITA", "Amana"]
-        : ["MyNITA", "Amana"],
-    [isNiamey],
+  const paymentOptions = useMemo(
+    () => getPaymentOptions(city),
+    [city],
   );
 
   const handleCityChange = (nextCity: City) => {
     setCity(nextCity);
-    setReceptionMode(DEFAULT_RECEPTION[nextCity]);
-    setPaymentMode(DEFAULT_PAYMENT[nextCity]);
+    setReceptionMode(getReceptionOptions(nextCity)[0]);
+    setPaymentMode(getPaymentOptions(nextCity)[0]);
     setAddress("");
+    setOtherCity("");
     setError("");
   };
 
@@ -109,7 +146,9 @@ export default function CheckoutForm() {
     setSuccess(false);
 
     if (cartItems.length === 0) {
-      setError("Votre panier est vide. Ajoutez au moins un article avant de commander.");
+      setError(
+        "Votre panier est vide. Ajoutez au moins un article avant de commander.",
+      );
       return;
     }
 
@@ -118,10 +157,21 @@ export default function CheckoutForm() {
       return;
     }
 
-    if (requiresAddress && !address.trim()) {
-      setError("Veuillez renseigner votre adresse ou quartier pour la livraison à domicile à Niamey.");
+    if (isOtherCity && !otherCity.trim()) {
+      setError("Veuillez préciser votre ville.");
       return;
     }
+
+    if (requiresAddress && !address.trim()) {
+      setError(
+        "Veuillez renseigner votre adresse ou quartier pour la livraison à domicile à Niamey.",
+      );
+      return;
+    }
+
+    const displayCity = isOtherCity
+      ? otherCity.trim()
+      : city;
 
     const lines = [
       "Bonjour Ay-Habo, je souhaite confirmer cette commande.",
@@ -129,8 +179,12 @@ export default function CheckoutForm() {
       "INFORMATIONS CLIENT",
       `Nom complet : ${fullName.trim()}`,
       `Téléphone : ${phone.trim()}`,
-      `Ville : ${city}`,
+      `Ville : ${displayCity}`,
+      ...(isOtherCity ? ["Pays / zone : Autre pays desservi"] : []),
       `Mode de réception : ${receptionMode}`,
+      ...(country !== "niger"
+        ? ["Frais de livraison : à confirmer sur WhatsApp"]
+        : []),
       ...(requiresAddress ? [`Adresse/quartier : ${address.trim()}`] : []),
       `Mode de paiement : ${paymentMode}`,
       ...(paymentBeforeShipping
@@ -149,7 +203,8 @@ export default function CheckoutForm() {
       `Total provisoire : ${formatPrice(cartSubtotal)} FCFA`,
     ];
 
-    const url = whatsappLink(lines.join("\n"), "niger");
+    const message = lines.join("\n");
+    const url = whatsappLinkForCity(message, displayCity);
 
     window.open(url, "_blank", "noopener,noreferrer");
     clearCart();
@@ -238,18 +293,57 @@ export default function CheckoutForm() {
               onChange={(event) => handleCityChange(event.target.value as City)}
               className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-[#0A2342] focus:ring-2 focus:ring-[#0A2342]/10"
             >
-              {CITIES.map((item) => (
-                <option key={item} value={item}>
-                  {item}
+              <optgroup label="Niger">
+                {CITIES.filter((item) => NIGER_CITIES.has(item)).map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label="Bénin">
+                {CITIES.filter((item) => BENIN_CITIES.has(item)).map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label="Autres pays desservis">
+                <option value="Autre ville (préciser)">
+                  Autre ville (préciser)
                 </option>
-              ))}
+              </optgroup>
             </select>
           </label>
+
+          {isOtherCity && (
+            <label className="block">
+              <span className="text-sm font-semibold text-[#0A2342]">
+                Ville à préciser <span className="text-red-600">*</span>
+              </span>
+              <input
+                required
+                value={otherCity}
+                onChange={(event) => setOtherCity(event.target.value)}
+                type="text"
+                autoComplete="address-level2"
+                placeholder="Ex. Lomé, Bamako, Abidjan..."
+                className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-[#0A2342] focus:ring-2 focus:ring-[#0A2342]/10"
+              />
+              <p className="mt-2 text-xs leading-5 text-slate-500">
+                Les frais de livraison seront confirmés sur WhatsApp.
+              </p>
+            </label>
+          )}
 
           <fieldset>
             <legend className="text-sm font-semibold text-[#0A2342]">
               Mode de réception <span className="text-red-600">*</span>
             </legend>
+            <p className="mt-1 text-xs leading-5 text-slate-500">
+              {city === "Niamey"
+                ? "À Niamey : livraison à domicile ou retrait."
+                : "Retrait en agence de transport. Les frais de livraison sont à confirmer sur WhatsApp."}
+            </p>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               {receptionOptions.map((option) => (
                 <label
@@ -295,9 +389,11 @@ export default function CheckoutForm() {
               Mode de paiement <span className="text-red-600">*</span>
             </legend>
             <p className="mt-1 text-xs leading-5 text-slate-500">
-              {paymentBeforeShipping
-                ? "Pour les autres villes, le paiement se fait avant expédition."
-                : "À Niamey, choisissez le mode qui vous convient."}
+              {city === "Niamey"
+                ? "À Niamey : espèces à la livraison, MyNITA ou Amana."
+                : BENIN_CITIES.has(city)
+                  ? "Au Bénin : Mobile Money ou espèces, à confirmer sur WhatsApp."
+                  : "Pour les autres villes : paiement avant expédition via MyNITA ou Amana."}
             </p>
             <div className="mt-3 grid gap-3 sm:grid-cols-3">
               {paymentOptions.map((option) => (
