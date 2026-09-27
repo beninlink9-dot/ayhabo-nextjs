@@ -1,3 +1,5 @@
+import { marked } from "marked";
+
 import { supabaseConfig } from "@/lib/supabase";
 
 export type BlogPost = {
@@ -58,6 +60,19 @@ function mapBlogPost(post: BlogApiPost): BlogPost {
     publishedAt: post.published_at,
     updatedAt: post.updated_at,
   };
+}
+
+export function prepareBlogContent(raw: string): string {
+  if (!raw) return "";
+
+  let html = marked.parse(raw, { async: false }) as string;
+  html = html.replace(/\\/produit\\//g, "/produits/");
+  html = html.replace(
+    /https:\\/\\/www\\.ayhabo\\.com\\/produit\\//g,
+    "https://www.ayhabo.com/produits/",
+  );
+
+  return html;
 }
 
 async function blogRequest<T>(
