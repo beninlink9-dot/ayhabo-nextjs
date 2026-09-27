@@ -36,6 +36,12 @@ type BlogListResponse = {
   categories?: BlogApiCategory[];
 };
 
+type BlogListApiResponse =
+  | BlogApiPost[]
+  | BlogListResponse
+  | { data: BlogApiPost[] }
+  | { error: string; message?: string };
+
 type BlogGetResponse = {
   post: BlogApiPost;
 };
@@ -47,38 +53,78 @@ function mapBlogPost(post: BlogApiPost): BlogPost {
     title: post.title,
     excerpt: post.excerpt,
     content: post.body_markdown,
-    category: post.category?.name ?? "",
-    image: post.featured_image_url ?? null,
-    publishedAt: post.published_at,
-    updatedAt: post.updated_at,
-  };
-}
-
-async function blogRequest<T>(
+    category: post.categoasync function blogRequest<T>(
   path: string,
   body: Record<string, unknown>,
 ): Promise<T> {
-  const response = await fetch(`${supabaseConfig.blogUrl}${path}`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-    next: {
-      revalidate: 120,
-    },
-  });
+  const url = `${supabaseConfig.blogUrl}${path}`;
 
-  if (!response.ok) {
-    throw new Error(`Blog API error: ${response.status}`);
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+      next: {
+        revalidate: 120,
+      },
+    });
+
+    const rawBody = await response.text();
+
+    console.log("[Ay-Habo Blog] URL:", url);
+    console.log("[Ay-Habo Blog] HTTP status:", response.status);
+    console.log("[Ay-Habo Blog] Raw response:", rawBody.slice(0, 500));
+
+    if (!response.ok) {
+      throw new Error(`Blog API error: ${response.status}`);
+    }
+
+    try {
+      return JSON.parse(rawBody) as T;
+    } catch {
+      throw new Error("Blog API returned invalid JSON");
+    }
+  } catch (error) {
+    console.error("[Ay-Habo Blog] Request failed:", error);
+    throw error;
+  }
+}
+
+function extractPosts(data: BlogListApiResponse): BlogApiPost[] {
+  if (Array.isArray(data)) {
+    return data;
   }
 
-  return response.json() as Promise<T>;
+  if ("posts" in data && Array.isArray(data.posts)) {
+    return data.posts;
+  }
+
+  if ("data" in data && Array.isArray(data.data)) {
+    return data.data;
+  }
+
+  if ("error" in data) {
+    console.error("[Ay-Habo Blog] API error:", data.error, data.message ?? "");
+  }
+
+  return [];
 }
 
 export async function getBlogPosts(): Promise<BlogPost[]> {
-  const data = await blogRequest<BlogListResponse>("/public/list", {
+  try {
+    const data = await blogRequest<BlogListApiResponse>("/public/list", {
+      limit: 50,
+    });
+
+    return extractPosts(data).map(mapBlogPost);
+  } catch (error) {
+    console.error("[Ay-Habo Blog] getBlogPosts failed:", error);
+    return [];
+  }
+}const data = await blogRequest<BlogListResponse>("/public/list", {
     limit: 50,
   });
 
