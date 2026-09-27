@@ -1,3 +1,5 @@
+import { supabaseConfig } from "@/lib/supabase";
+
 type JsonValue =
   | string
   | number
