@@ -5,13 +5,14 @@ import { notFound } from "next/navigation";
 import ProductActions from "@/components/ProductActions";
 import ProductCard from "@/components/ProductCard";
 import ProductGallery from "@/components/ProductGallery";
-import { getRelatedProducts, productBySlug, products } from "@/lib/products";
+import { getProductBySlug, getRelatedProducts } from "@/lib/products";
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const products = await import("@/lib/products").then((module) => module.getAllProducts());
   return products.map((product) => ({ slug: product.slug }));
 }
 
@@ -19,7 +20,7 @@ export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = productBySlug(slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     return {
@@ -50,7 +51,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   if (!product) notFound();
 
-  const relatedProducts = getRelatedProducts(product.id, 4);
+  const relatedProducts = await getRelatedProducts(product.id, 4);
   const price = new Intl.NumberFormat("fr-FR").format(product.price);
   const productUrl = `https://ayhabo.com/produits/${product.slug}`;
 
@@ -58,7 +59,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
-    image: product.images.map((image) => `https://ayhabo.com/${image}`),
+    image: product.images,
     description: product.description,
     brand: { "@type": "Brand", name: "Ay-Habo" },
     offers: {
