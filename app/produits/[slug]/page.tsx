@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import ProductActions from "@/components/ProductActions";
 import ProductCard from "@/components/ProductCard";
 import ProductGallery from "@/components/ProductGallery";
 import { getRelatedProducts, productBySlug, products } from "@/lib/products";
@@ -96,6 +97,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <p className="mt-2 text-sm text-slate-500">Référence : {product.id}</p>
               <p className="mt-5 text-3xl font-bold text-[#0A2342]">{price} FCFA</p>
               <p className="mt-3 text-base leading-7 text-slate-700">{product.benefit}</p>
+
+              <ProductActions product={product} />
 
               <div className="mt-6 rounded-2xl bg-orange-50 p-4 ring-1 ring-orange-100">
                 <p className="text-sm font-semibold leading-6 text-[#0A2342]">
