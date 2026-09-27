@@ -42,6 +42,7 @@ export default function Footer() {
             </h2>
             <nav className="mt-5 space-y-3" aria-label="Navigation footer">
               <Link href="/catalogue" className="block text-sm text-slate-300 transition hover:text-orange-400">Catalogue</Link>
+              <Link href="/blog" className="block text-sm text-slate-300 transition hover:text-orange-400">Blog &amp; conseils</Link>
               <Link href="/panier" className="block text-sm text-slate-300 transition hover:text-orange-400">Panier</Link>
               <Link href="/suivi" className="block text-sm text-slate-300 transition hover:text-orange-400">Suivre une commande</Link>
               <Link href="/conditions" className="block text-sm text-slate-300 transition hover:text-orange-400">Conditions générales</Link>
