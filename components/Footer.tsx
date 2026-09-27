@@ -4,8 +4,13 @@ import Link from "next/link";
 import { whatsappLink } from "@/lib/whatsapp";
 
 export default function Footer() {
-  const whatsappUrl = whatsappLink(
-    "Bonjour Ay-Habo, je souhaite obtenir des informations."
+  const whatsappNigerUrl = whatsappLink(
+    "Bonjour Ay-Habo, je souhaite obtenir des informations.",
+    "niger",
+  );
+  const whatsappBeninUrl = whatsappLink(
+    "Bonjour Ay-Habo, je souhaite obtenir des informations.",
+    "benin",
   );
 
   return (
@@ -63,7 +68,12 @@ export default function Footer() {
               Contact
             </h2>
             <div className="mt-5 space-y-3">
-              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="block text-sm text-slate-300 transition hover:text-orange-400">WhatsApp</a>
+              <a href={whatsappNigerUrl} target="_blank" rel="noopener noreferrer" className="block text-sm text-slate-300 transition hover:text-orange-400">
+                📱 Niger : +227 80 24 48 84
+              </a>
+              <a href={whatsappBeninUrl} target="_blank" rel="noopener noreferrer" className="block text-sm text-slate-300 transition hover:text-orange-400">
+                📱 Bénin : +229 01 53 63 65 99
+              </a>
               <a href="mailto:contact@ayhabo.com" className="block text-sm text-slate-300 transition hover:text-orange-400">contact@ayhabo.com</a>
             </div>
             <h3 className="mt-7 text-sm font-semibold text-white">Suivez Ay-Habo</h3>
