@@ -23,42 +23,12 @@ function normalize(value: string): string {
   return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
 }
 
-function escapeHtml(value: string): string {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
+function prepareBlogHtml(html: string): string {
+  return html
+    .replace(/href=(["'])\/produit\//g, 'href=$1/produits/')
+    .replace(/href=(["'])https?:\/\/www\\.ayhabo\\.com\/produit\//g, 'href=$1https://www.ayhabo.com/produits/');
 }
 
-function renderMarkdown(markdown: string): string {
-  const escaped = escapeHtml(markdown.trim());
-
-  return escaped
-    .replace(/^###### (.+)$/gm, "<h6>$1</h6>")
-    .replace(/^##### (.+)$/gm, "<h5>$1</h5>")
-    .replace(/^#### (.+)$/gm, "<h4>$1</h4>")
-    .replace(/^### (.+)$/gm, "<h3>$1</h3>")
-    .replace(/^## (.+)$/gm, "<h2>$1</h2>")
-    .replace(/^# (.+)$/gm, "<h2>$1</h2>")
-    .replace(/^> (.+)$/gm, "<blockquote>$1</blockquote>")
-    .replace(/^- (.+)$/gm, "<li>$1</li>")
-    .replace(/^\* (.+)$/gm, "<li>$1</li>")
-    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.+?)\*/g, "<em>$1</em>")
-    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" rel="noopener noreferrer">$1</a>')
-    .split(/\n{2,}/)
-    .map((block) => block.trim())
-    .filter(Boolean)
-    .map((block) =>
-      block.startsWith("<h") ||
-      block.startsWith("<li>") ||
-      block.startsWith("<blockquote>")
-        ? block
-        : `<p>${block.replace(/\n/g, "<br />")}</p>`,
-    )
-    .join("\n");
-}
 
 export async function generateStaticParams() {
   const posts = await getBlogPosts();
@@ -176,7 +146,7 @@ export default async function BlogArticlePage({
         <div className="mt-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200 sm:p-10">
           <div
             className="prose prose-slate max-w-none prose-headings:text-[#0A2342] prose-a:text-[#0A2342] prose-strong:text-[#0A2342]"
-            dangerouslySetInnerHTML={{ __html: renderMarkdown(post.content) }}
+            dangerouslySetInnerHTML={{ __html: prepareBlogHtml(post.content) }}
           />
         </div>
 
