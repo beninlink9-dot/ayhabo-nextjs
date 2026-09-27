@@ -1,18 +1,119 @@
+import Link from "next/link";
+
+import ProductCard from "@/components/ProductCard";
+import { categories } from "@/lib/categories";
+import { products } from "@/lib/products";
+
+const trustBadges = [
+  ["✓", "Vérifié & Expédié 24h"],
+  ["🚚", "Livraison 4-6 jours"],
+  ["💬", "Commande WhatsApp"],
+  ["₣", "Paiement Mobile Money"],
+] as const;
+
+const steps = [
+  ["1", "Choisir", "Sélectionnez les produits qui vous intéressent."],
+  ["2", "Indiquer la ville", "Indiquez votre ville pour organiser la réception."],
+  ["3", "Confirmer sur WhatsApp", "Confirmez votre commande et les détails avec Ay-Habo."],
+  ["4", "Recevoir", "Recevez votre commande selon le délai indiqué."],
+] as const;
+
 export default function HomePage() {
   return (
-    <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-      <div className="rounded-3xl bg-[#0A2342] px-6 py-16 text-white sm:px-10 lg:px-16">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-400">
-          Ay-Habo
-        </p>
-        <h1 className="mt-4 max-w-3xl text-4xl font-bold tracking-tight sm:text-5xl">
-          Le bon choix, simplement.
-        </h1>
-        <p className="mt-6 max-w-2xl text-base leading-7 text-slate-200 sm:text-lg">
-          Votre boutique en ligne pour découvrir des produits utiles au Niger
-          et en Afrique de l’Ouest.
-        </p>
-      </div>
-    </section>
+    <>
+      <section className="bg-slate-50 py-10 sm:py-16 lg:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="rounded-3xl bg-[#0A2342] px-6 py-12 text-white shadow-sm sm:px-10 sm:py-16 lg:px-16">
+            <div className="max-w-3xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-orange-400">Boutique en ligne au Niger</p>
+              <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+                Des produits utiles, livrés simplement au Niger.
+              </h1>
+              <p className="mt-6 max-w-2xl text-base leading-7 text-slate-200 sm:text-lg">
+                Une sélection de produits utiles, avec disponibilité vérifiée, commande simple et accompagnement sur WhatsApp.
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link href="/catalogue" className="inline-flex items-center justify-center rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-[#0A2342]">
+                  Découvrir les produits
+                </Link>
+                <Link href="/suivi" className="inline-flex items-center justify-center rounded-xl border border-white/30 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#0A2342]">
+                  Suivre une commande
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white py-6 sm:py-8">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-3 px-4 sm:grid-cols-4 sm:px-6 lg:px-8">
+          {trustBadges.map(([icon, label]) => (
+            <div key={label} className="flex items-center gap-3 rounded-xl bg-slate-50 px-4 py-4 ring-1 ring-slate-200">
+              <span className="text-lg text-[#0A2342]" aria-hidden="true">{icon}</span>
+              <span className="text-sm font-semibold text-slate-700">{label}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="bg-slate-50 py-12 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-8 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-orange-500">Explorer</p>
+              <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#0A2342]">Catégories essentielles</h2>
+            </div>
+            <Link href="/catalogue" className="hidden text-sm font-semibold text-[#0A2342] hover:underline sm:block">Tout voir</Link>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {categories.map((category) => (
+              <Link
+                key={category.name}
+                href={`/catalogue?cat=${encodeURIComponent(category.name)}`}
+                className="flex items-center gap-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-0.5 hover:shadow-md"
+              >
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-2xl" aria-hidden="true">{category.icon}</span>
+                <span>
+                  <span className="block font-semibold text-[#0A2342]">{category.name}</span>
+                  <span className="mt-1 block text-sm text-slate-600">{category.desc}</span>
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white py-12 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-8">
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-orange-500">Sélection de lancement</p>
+            <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#0A2342]">Produits disponibles</h2>
+            <p className="mt-2 text-slate-600">Découvrez les produits actuellement disponibles.</p>
+          </div>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {products.map((product) => <ProductCard key={product.id} product={product} />)}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-slate-50 py-12 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-8">
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-orange-500">Commande simple</p>
+            <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#0A2342]">Comment ça marche ?</h2>
+          </div>
+          <div className="grid gap-4 md:grid-cols-4">
+            {steps.map(([number, title, description]) => (
+              <div key={number} className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#0A2342] text-sm font-bold text-white">{number}</span>
+                <h3 className="mt-5 text-lg font-semibold text-[#0A2342]">{title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
