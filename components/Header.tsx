@@ -4,10 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { Search, ShoppingCart, Truck, MessageCircle } from "lucide-react";
 
+import { useCart } from "@/lib/cart-context";
 import { whatsappLink } from "@/lib/whatsapp";
 
 export default function Header() {
-  const cartQuantity = 0;
+  const { cartCount } = useCart();
   const assistanceUrl = whatsappLink(
     "Bonjour Ay-Habo, j’ai besoin d’assistance."
   );
@@ -63,9 +64,9 @@ export default function Header() {
               className="relative flex h-10 w-10 items-center justify-center rounded-xl text-[#0A2342] transition hover:bg-slate-100"
             >
               <ShoppingCart className="h-5 w-5" aria-hidden="true" />
-              {cartQuantity > 0 && (
+              {cartCount > 0 && (
                 <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-500 px-1 text-[11px] font-bold text-white">
-                  {cartQuantity > 99 ? "99+" : cartQuantity}
+                  {cartCount > 99 ? "99+" : cartCount}
                 </span>
               )}
             </Link>
