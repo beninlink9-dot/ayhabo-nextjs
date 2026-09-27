@@ -53,11 +53,18 @@ function mapBlogPost(post: BlogApiPost): BlogPost {
     title: post.title,
     excerpt: post.excerpt,
     content: post.body_markdown,
-    category: post.categoasync function blogRequest<T>(
+    category: post.category?.name ?? "",
+    image: post.featured_image_url ?? null,
+    publishedAt: post.published_at,
+    updatedAt: post.updated_at,
+  };
+}
+
+async function blogRequest<T>(
   path: string,
   body: Record<string, unknown>,
 ): Promise<T> {
-  const url = `${supabaseConfig.blogUrl}${path}`;
+  const url = `${supabaseConfig.blogUrl${"}"}${"}path${"}`;
 
   try {
     const response = await fetch(url, {
@@ -79,7 +86,7 @@ function mapBlogPost(post: BlogApiPost): BlogPost {
     console.log("[Ay-Habo Blog] Raw response:", rawBody.slice(0, 500));
 
     if (!response.ok) {
-      throw new Error(`Blog API error: ${response.status}`);
+      throw new Error(`Blog API error: ${"}response.status${"}`);
     }
 
     try {
@@ -94,17 +101,9 @@ function mapBlogPost(post: BlogApiPost): BlogPost {
 }
 
 function extractPosts(data: BlogListApiResponse): BlogApiPost[] {
-  if (Array.isArray(data)) {
-    return data;
-  }
-
-  if ("posts" in data && Array.isArray(data.posts)) {
-    return data.posts;
-  }
-
-  if ("data" in data && Array.isArray(data.data)) {
-    return data.data;
-  }
+  if (Array.isArray(data)) return data;
+  if ("posts" in data && Array.isArray(data.posts)) return data.posts;
+  if ("data" in data && Array.isArray(data.data)) return data.data;
 
   if ("error" in data) {
     console.error("[Ay-Habo Blog] API error:", data.error, data.message ?? "");
@@ -124,11 +123,6 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
     console.error("[Ay-Habo Blog] getBlogPosts failed:", error);
     return [];
   }
-}const data = await blogRequest<BlogListResponse>("/public/list", {
-    limit: 50,
-  });
-
-  return (data.posts ?? []).map(mapBlogPost);
 }
 
 export async function getBlogPostBySlug(
