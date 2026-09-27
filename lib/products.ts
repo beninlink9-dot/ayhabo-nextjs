@@ -81,15 +81,6 @@ export const products: Product[] = [
   }
 ];
 
-const categories = [
-  {name:'Cuisine',icon:'🍲',desc:'Préparation et petits appareils'},
-  {name:'Maison',icon:'🏠',desc:'Confort et accessoires utiles'},
-  {name:'Solaire & énergie',icon:'☀️',desc:'Produits bientôt disponibles'},
-  {name:'Électronique',icon:'🔌',desc:'Sélection en préparation'},
-  {name:'Accessoires mobiles',icon:'📱',desc:'Sélection en préparation'},
-  {name:'Beauté',icon:'✨',desc:'Sélection en préparation'}
-];
-  
 export function productBySlug(slug: string): Product | undefined {
   return products.find((product) => product.slug === slug);
 }
