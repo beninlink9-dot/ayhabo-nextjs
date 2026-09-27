@@ -9,26 +9,31 @@ export const metadata: Metadata = {
 const sections = [
   {
     title: "Contrôle avant départ",
+    important: false,
     content:
       "Lorsque la nature du produit le permet, Ay-Habo vérifie au Bénin la référence, la variante, la quantité, les accessoires, l’état apparent et le fonctionnement avant l’envoi vers le Niger. Une trace de ce contrôle peut être conservée.",
   },
   {
     title: "Contrôle au Niger",
+    important: false,
     content:
       "À l’arrivée, le partenaire ou opérateur autorisé vérifie l’état du colis et, lorsque cela est possible, effectue un nouveau contrôle du produit avant sa remise au client.",
   },
   {
     title: "Niamey",
+    important: false,
     content:
       "La livraison à domicile est proposée selon une zone standard ou éloignée. Le tarif indicatif est de 1 000 à 2 000 FCFA. Un retrait peut aussi être proposé.",
   },
   {
     title: "Autres villes",
+    important: false,
     content:
       "La réception se fait par défaut auprès d’une agence de transport choisie ou validée avec le client. Une livraison locale n’est proposée que lorsqu’un partenaire fiable est disponible.",
   },
   {
     title: "Vérification à la remise",
+    important: false,
     content:
       "Avant de confirmer la réception, le client doit vérifier l’identité du produit, l’état extérieur, les accessoires et, si possible, son fonctionnement. Toute anomalie visible doit être signalée immédiatement. La remise peut être confirmée par une preuve de livraison ou un code OTP.",
   },
@@ -40,6 +45,7 @@ const sections = [
   },
   {
     title: "Colis non retiré ou refusé",
+    important: false,
     content:
       "Ay-Habo tente de contacter le client. Les frais de transport, de nouvelle présentation ou de stockage réellement engagés peuvent rester dus lorsque le refus ou l’absence n’est pas imputable à Ay-Habo et lorsque la réglementation le permet. Des non-retraits répétés peuvent conduire à exiger un acompte ou un prépaiement pour une commande future.",
   },
