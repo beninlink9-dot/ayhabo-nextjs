@@ -5,20 +5,18 @@ import { notFound } from "next/navigation";
 import ProductActions from "@/components/ProductActions";
 import ProductCard from "@/components/ProductCard";
 import ProductGallery from "@/components/ProductGallery";
-import { getProductBySlug, getRelatedProducts } from "@/lib/products";
+import { getAllProducts, getProductBySlug, getRelatedProducts } from "@/lib/products";
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
 };
 
 export async function generateStaticParams() {
-  const products = await import("@/lib/products").then((module) => module.getAllProducts());
+  const products = await getAllProducts();
   return products.map((product) => ({ slug: product.slug }));
 }
 
-export async function generateMetadata({
-  params,
-}: ProductPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
 
@@ -47,7 +45,7 @@ function Stars() {
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const product = productBySlug(slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) notFound();
 
