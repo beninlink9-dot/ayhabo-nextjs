@@ -100,15 +100,6 @@ function normalizeProduct(row: SupabaseProductRow): Product {
 
 async function fetchProducts(searchParams: URLSearchParams): Promise<Product[]> {
   const requestUrl = PRODUCTS_ENDPOINT + "?" + searchParams.toString();
-  const hasApiKeyHeader = Boolean(supabaseConfig.anonKey);
-  const hasAuthorizationHeader = Boolean(supabaseConfig.anonKey);
-
-  console.info("[Ay-Habo][Supabase] Request URL:", requestUrl);
-  console.info("[Ay-Habo][Supabase] anonKey length:", supabaseConfig.anonKey.length);
-  console.info("[Ay-Habo][Supabase] Headers present:", {
-    apikey: hasApiKeyHeader,
-    Authorization: hasAuthorizationHeader,
-  });
 
   try {
     if (!supabaseConfig.anonKey) {
@@ -125,17 +116,11 @@ async function fetchProducts(searchParams: URLSearchParams): Promise<Product[]> 
       cache: "no-store",
     });
 
-    console.info("[Ay-Habo][Supabase] HTTP status:", response.status);
-
     const responseBody = await response.text();
-    console.info(
-      "[Ay-Habo][Supabase] Response body (first 500 chars):",
-      responseBody.slice(0, 500),
-    );
 
     if (!response.ok) {
       console.error(
-        "[Ay-Habo][Supabase] Request failed:",
+        "Supabase products request failed:",
         response.status,
         responseBody,
       );
@@ -148,14 +133,11 @@ async function fetchProducts(searchParams: URLSearchParams): Promise<Product[]> 
         ? rows.map((row) => normalizeProduct(row as SupabaseProductRow))
         : [];
     } catch (parseError) {
-      console.error(
-        "[Ay-Habo][Supabase] Response JSON parse failed:",
-        parseError,
-      );
+      console.error("Supabase products response JSON parse failed:", parseError);
       return [];
     }
   } catch (error) {
-    console.error("[Ay-Habo][Supabase] Network/request error:", error);
+    console.error("Supabase products request failed:", error);
     return [];
   }
 }
