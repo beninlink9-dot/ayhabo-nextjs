@@ -99,30 +99,63 @@ function normalizeProduct(row: SupabaseProductRow): Product {
 }
 
 async function fetchProducts(searchParams: URLSearchParams): Promise<Product[]> {
+  const requestUrl = PRODUCTS_ENDPOINT + "?" + searchParams.toString();
+  const hasApiKeyHeader = Boolean(supabaseConfig.anonKey);
+  const hasAuthorizationHeader = Boolean(supabaseConfig.anonKey);
+
+  console.info("[Ay-Habo][Supabase] Request URL:", requestUrl);
+  console.info("[Ay-Habo][Supabase] anonKey length:", supabaseConfig.anonKey.length);
+  console.info("[Ay-Habo][Supabase] Headers present:", {
+    apikey: hasApiKeyHeader,
+    Authorization: hasAuthorizationHeader,
+  });
+
   try {
     if (!supabaseConfig.anonKey) {
       console.error("Supabase anon key is not configured.");
       return [];
     }
-    const response = await fetch(
-      PRODUCTS_ENDPOINT + "?" + searchParams.toString(),
-      {
-        headers: {
-          Accept: "application/json",
-          apikey: supabaseConfig.anonKey,
-          Authorization: "Bearer " + supabaseConfig.anonKey,
-        },
-        cache: "no-store",
+
+    const response = await fetch(requestUrl, {
+      headers: {
+        Accept: "application/json",
+        apikey: supabaseConfig.anonKey,
+        Authorization: "Bearer " + supabaseConfig.anonKey,
       },
+      cache: "no-store",
+    });
+
+    console.info("[Ay-Habo][Supabase] HTTP status:", response.status);
+
+    const responseBody = await response.text();
+    console.info(
+      "[Ay-Habo][Supabase] Response body (first 500 chars):",
+      responseBody.slice(0, 500),
     );
+
     if (!response.ok) {
-      console.error("Supabase products request failed: " + response.status);
+      console.error(
+        "[Ay-Habo][Supabase] Request failed:",
+        response.status,
+        responseBody,
+      );
       return [];
     }
-    const rows = await response.json() as SupabaseProductRow[];
-    return Array.isArray(rows) ? rows.map(normalizeProduct) : [];
+
+    try {
+      const rows = JSON.parse(responseBody) as unknown;
+      return Array.isArray(rows)
+        ? rows.map((row) => normalizeProduct(row as SupabaseProductRow))
+        : [];
+    } catch (parseError) {
+      console.error(
+        "[Ay-Habo][Supabase] Response JSON parse failed:",
+        parseError,
+      );
+      return [];
+    }
   } catch (error) {
-    console.error("Supabase products request failed:", error);
+    console.error("[Ay-Habo][Supabase] Network/request error:", error);
     return [];
   }
 }
