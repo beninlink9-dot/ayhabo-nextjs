@@ -20,10 +20,7 @@ type CataloguePageProps = {
 type SortOption = "relevance" | "price-asc" | "price-desc";
 
 function getSortOption(value?: string): SortOption {
-  if (value === "price-asc" || value === "price-desc") {
-    return value;
-  }
-
+  if (value === "price-asc" || value === "price-desc") return value;
   return "relevance";
 }
 
